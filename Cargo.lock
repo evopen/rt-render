@@ -433,18 +433,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
 
 [[package]]
-name = "egui-playground"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "futures",
- "image",
- "log",
- "wgpu",
- "winit",
-]
-
-[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1413,6 +1401,18 @@ name = "regex-syntax"
 version = "0.6.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8cab7a364d15cde1e505267766a2d3c4e22a843e1a601f0fa7564c0f82ced11c"
+
+[[package]]
+name = "rt-render"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "futures",
+ "image",
+ "log",
+ "wgpu",
+ "winit",
+]
 
 [[package]]
 name = "rusttype"
