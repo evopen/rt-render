@@ -658,9 +658,9 @@ dependencies = [
 
 [[package]]
 name = "gfx-backend-dx11"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0105746c65b502f6629b7e1acc3610a7726a2f8b37229119fb774d48af174dd"
+checksum = "7b44558bb57c3301eff5b4c55f00d6965c98167ff5f0d90e3c4107f7a0968d49"
 dependencies = [
  "arrayvec",
  "bitflags",
@@ -1729,10 +1729,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spirv-std"
-version = "0.1.0"
-
-[[package]]
 name = "spirv-tools"
 version = "0.1.0"
 dependencies = [
@@ -1929,14 +1925,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f50de3927f93d202783f4513cda820ab47ef17f624b03c096e86ef00c67e6b5f"
 dependencies = [
  "lazy_static",
-]
-
-[[package]]
-name = "triangle"
-version = "0.1.0"
-dependencies = [
- "glam",
- "spirv-std",
 ]
 
 [[package]]
