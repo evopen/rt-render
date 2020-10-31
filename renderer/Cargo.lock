@@ -19,6 +19,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aae1277d39aeec15cb388266ecc24b11c80469deae6067e17a1a7aa9e5c1f234"
 
 [[package]]
+name = "ahash"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6789e291be47ace86a60303502173d84af8327e3627ecf334356ee0f87a164c"
+
+[[package]]
 name = "aho-corasick"
 version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -461,6 +467,17 @@ name = "downcast-rs"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
+
+[[package]]
+name = "egui"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cfb8e71068116cb6cc7d875086d40be4fedde16153e892c3553c243576d0f870"
+dependencies = [
+ "ahash",
+ "parking_lot",
+ "rusttype",
+]
 
 [[package]]
 name = "either"
@@ -1554,6 +1571,7 @@ name = "renderer"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "egui",
  "env_logger",
  "futures",
  "glam",
