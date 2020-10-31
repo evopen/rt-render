@@ -9,6 +9,12 @@ use spirv_std::{Input, MathExt, Output};
 
 
 #[allow(unused_attributes)]
+#[spirv(fragment)]
+pub fn main_fs(mut output: Output<Vec4>) {
+    output.store(Vec4::new(1.0, 1.0, 0.0, 1.0))
+}
+
+#[allow(unused_attributes)]
 #[spirv(vertex)]
 pub fn main_vs(
     #[spirv(vertex_index)] vert_id: Input<i32>,
@@ -18,12 +24,6 @@ pub fn main_vs(
     let vert_id = vert_id.load();
     let in_pos = in_pos.load();
     out_pos.store(Vec4::new(in_pos.x(), in_pos.y(), 0.0, 1.0));
-}
-
-#[allow(unused_attributes)]
-#[spirv(fragment)]
-pub fn main_fs(mut output: Output<Vec4>) {
-    output.store(Vec4::new(1.0, 0.0, 0.0, 1.0))
 }
 
 #[cfg(all(not(test), target_arch = "spirv"))]
