@@ -2,4 +2,7 @@
 
 members = [
   "renderer",
+  "shader/triangle"
 ]
+
+exclude = ["rust-gpu"]
