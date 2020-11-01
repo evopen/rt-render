@@ -1,7 +1,8 @@
 [workspace]
 
 members = [
-    "renderer"
+    "renderer",
+    "batch-spirv-builder"
 ]
 
 default-members = [

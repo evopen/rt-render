@@ -1,0 +1,11 @@
+[package]
+name = "batch-spirv-builder"
+version = "0.1.0"
+authors = ["evopen <520dhh@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+spirv-builder = { path = "../rust-gpu/spirv-builder" }
+rayon = "1.5.0"
