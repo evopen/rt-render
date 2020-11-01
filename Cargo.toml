@@ -1,0 +1,14 @@
+[workspace]
+
+members = [
+    "renderer"
+]
+
+default-members = [
+    "renderer"
+]
+
+exclude = [
+    "rust-gpu",
+    "shader/"
+]
