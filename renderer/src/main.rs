@@ -4,6 +4,11 @@ use winit::event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use winit::event_loop::ControlFlow;
 use wgpu::util::DeviceExt;
 use wgpu::ColorStateDescriptor;
+use std::time::Instant;
+use egui::app::App;
+use egui::paint::FontDefinitions;
+use std::ops::DerefMut;
+use egui_wgpu_backend::ScreenDescriptor;
 
 struct State {
     surface: wgpu::Surface,
@@ -14,6 +19,11 @@ struct State {
     size: winit::dpi::PhysicalSize<u32>,
     render_pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
+    pub platform: egui_winit_platform::Platform,
+    start_time: Instant,
+    ui_render_pass: egui_wgpu_backend::RenderPass,
+    ui_paint_jobs: egui::PaintJobs,
+    ui_screen_descriptor: ScreenDescriptor,
 }
 
 impl State {
@@ -97,6 +107,24 @@ impl State {
             alpha_to_coverage_enabled: false,
         });
 
+        let platform = egui_winit_platform::Platform::new(egui_winit_platform::PlatformDescriptor {
+            physical_width: size.width,
+            physical_height: size.height,
+            scale_factor: window.scale_factor(),
+            font_definitions: FontDefinitions::with_pixels_per_point(window.scale_factor() as f32),
+            style: Default::default(),
+        });
+
+        let start_time = Instant::now();
+
+        let ui_render_pass = egui_wgpu_backend::RenderPass::new(&device, sc_desc.format);
+
+        let ui_screen_descriptor = ScreenDescriptor {
+            physical_width: size.width,
+            physical_height: size.height,
+            scale_factor: window.scale_factor() as f32,
+        };
+
         Self {
             surface,
             device,
@@ -106,6 +134,11 @@ impl State {
             size,
             render_pipeline,
             vertex_buffer,
+            platform,
+            start_time,
+            ui_render_pass,
+            ui_paint_jobs: vec![],
+            ui_screen_descriptor,
         }
     }
 
@@ -120,7 +153,18 @@ impl State {
         false
     }
 
-    fn update(&mut self) {}
+    fn update(&mut self) {
+        self.platform.update_time(self.start_time.elapsed().as_secs_f64());
+
+        let mut ui = self.platform.begin_frame();
+        if ui.button("numerous").clicked {
+            println!("nuasdfasdlfkajsdlfnalsdfnaosdnf");
+        }
+        let (_output, paint_jobs) = self.platform.end_frame();
+        self.ui_render_pass.update_texture(&self.device, &self.queue, &self.platform.context().texture());
+        self.ui_render_pass.update_buffers(&mut self.device, &mut self.queue, &paint_jobs, &self.ui_screen_descriptor);
+        self.ui_paint_jobs = paint_jobs;
+    }
 
     fn render(&mut self) {
         let frame = self.swap_chain.get_current_frame().unwrap().output;
@@ -152,6 +196,7 @@ impl State {
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
             render_pass.draw(0..3, 0..1);
         }
+        self.ui_render_pass.execute(&mut encoder, &frame.view, &self.ui_paint_jobs, &self.ui_screen_descriptor, None);
         self.queue.submit(std::iter::once(encoder.finish()));
     }
 }
@@ -167,63 +212,66 @@ fn main() {
 
     let mut state = block_on(State::new(&window));
 
-    event_loop.run(move |event, _, control_flow| match event {
-        Event::NewEvents(_) => {}
-        Event::WindowEvent { window_id, event } => {
-            if !state.input(&event) {
-                match event {
-                    WindowEvent::Resized(new_size) => {
-                        state.resize(new_size);
+    event_loop.run(move |event, _, control_flow| {
+        state.platform.handle_event(&event);
+        match event {
+            Event::NewEvents(_) => {}
+            Event::WindowEvent { window_id, event } => {
+                if !state.input(&event) {
+                    match event {
+                        WindowEvent::Resized(new_size) => {
+                            state.resize(new_size);
+                        }
+                        WindowEvent::Moved(_) => {}
+                        WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
+                        WindowEvent::Destroyed => {}
+                        WindowEvent::DroppedFile(_) => {}
+                        WindowEvent::HoveredFile(_) => {}
+                        WindowEvent::HoveredFileCancelled => {}
+                        WindowEvent::ReceivedCharacter(_) => {}
+                        WindowEvent::Focused(_) => {}
+                        WindowEvent::KeyboardInput {
+                            device_id,
+                            input,
+                            is_synthetic,
+                        } => match input {
+                            KeyboardInput {
+                                state: winit::event::ElementState::Pressed,
+                                virtual_keycode: Some(VirtualKeyCode::Escape),
+                                ..
+                            } => *control_flow = ControlFlow::Exit,
+                            _ => {}
+                        },
+                        WindowEvent::ModifiersChanged(_) => {}
+                        WindowEvent::CursorMoved { .. } => {}
+                        WindowEvent::CursorEntered { .. } => {}
+                        WindowEvent::CursorLeft { .. } => {}
+                        WindowEvent::MouseWheel { .. } => {}
+                        WindowEvent::MouseInput { .. } => {}
+                        WindowEvent::TouchpadPressure { .. } => {}
+                        WindowEvent::AxisMotion { .. } => {}
+                        WindowEvent::Touch(_) => {}
+                        WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                            state.resize(*new_inner_size);
+                        }
+                        WindowEvent::ThemeChanged(_) => {}
                     }
-                    WindowEvent::Moved(_) => {}
-                    WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                    WindowEvent::Destroyed => {}
-                    WindowEvent::DroppedFile(_) => {}
-                    WindowEvent::HoveredFile(_) => {}
-                    WindowEvent::HoveredFileCancelled => {}
-                    WindowEvent::ReceivedCharacter(_) => {}
-                    WindowEvent::Focused(_) => {}
-                    WindowEvent::KeyboardInput {
-                        device_id,
-                        input,
-                        is_synthetic,
-                    } => match input {
-                        KeyboardInput {
-                            state: winit::event::ElementState::Pressed,
-                            virtual_keycode: Some(VirtualKeyCode::Escape),
-                            ..
-                        } => *control_flow = ControlFlow::Exit,
-                        _ => {}
-                    },
-                    WindowEvent::ModifiersChanged(_) => {}
-                    WindowEvent::CursorMoved { .. } => {}
-                    WindowEvent::CursorEntered { .. } => {}
-                    WindowEvent::CursorLeft { .. } => {}
-                    WindowEvent::MouseWheel { .. } => {}
-                    WindowEvent::MouseInput { .. } => {}
-                    WindowEvent::TouchpadPressure { .. } => {}
-                    WindowEvent::AxisMotion { .. } => {}
-                    WindowEvent::Touch(_) => {}
-                    WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                        state.resize(*new_inner_size);
-                    }
-                    WindowEvent::ThemeChanged(_) => {}
                 }
             }
-        }
 
-        Event::DeviceEvent { .. } => {}
-        Event::UserEvent(_) => {}
-        Event::Suspended => {}
-        Event::Resumed => {}
-        Event::MainEventsCleared => {
-            window.request_redraw();
+            Event::DeviceEvent { .. } => {}
+            Event::UserEvent(_) => {}
+            Event::Suspended => {}
+            Event::Resumed => {}
+            Event::MainEventsCleared => {
+                window.request_redraw();
+            }
+            Event::RedrawRequested(_) => {
+                state.update();
+                state.render();
+            }
+            Event::RedrawEventsCleared => {}
+            Event::LoopDestroyed => {}
         }
-        Event::RedrawRequested(_) => {
-            state.update();
-            state.render();
-        }
-        Event::RedrawEventsCleared => {}
-        Event::LoopDestroyed => {}
     });
 }
