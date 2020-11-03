@@ -11,7 +11,7 @@ crate-type = ["dylib"]
 
 [dependencies]
 glam = "0.9.5"
-spirv-std = { path = "../../rust-gpu/spirv-std" }
+spirv-std = { path = "../../rust-gpu/crates/spirv-std" }
 
 [patch.crates-io]
 # https://github.com/bitshifter/glam-rs/pull/85
