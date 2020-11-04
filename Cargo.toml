@@ -2,7 +2,9 @@
 
 members = [
     "renderer",
-    "batch-spirv-builder"
+    "batch-spirv-builder",
+    "egui-winit",
+    "egui-wgpu"
 ]
 
 default-members = [
